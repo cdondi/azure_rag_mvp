@@ -1,0 +1,21 @@
+{
+    "python.defaultInterpreterPath": "./venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.formatting.provider": "black",
+    "docker.defaultPlatform": "linux",
+
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "editor.formatOnSave": true,
+
+    "azure.resourceFilter": [],
+    "azure.cloud": "AzureCloud",
+    
+    "files.associations": {
+        "*.env": "dotenv"
+    },
+    
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false
+}

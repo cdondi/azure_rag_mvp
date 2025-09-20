@@ -1,0 +1,22 @@
+# Mac-specific
+
+.DS*Store
+.DS_Store?
+.*\*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python
+
+**pycache**/
+_.pyc
+_.pyo
+venv/
+.env
+
+# VS Code
+
+.vscode/settings.json
+.vscode/launch.json
