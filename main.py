@@ -5,13 +5,15 @@ from pydantic import BaseModel, validator, Field
 import os
 from dotenv import load_dotenv
 from services import AzureOpenAIService, AzureSearchService
-import logging
+from logging_config import configure_logging, get_logger, HealthChecker
+import time
+import os
 
 load_dotenv()
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Configure logging
+configure_logging(log_level=os.getenv("LOG_LEVEL", "INFO"))
+logger = get_logger("main")
 
 
 # Enhanced request models for chat
@@ -54,8 +56,12 @@ templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Initialize Azure OpenAI service
+logger.info("Initializing Azure services")
 openai_service = AzureOpenAIService()
 search_service = AzureSearchService()
+health_checker = HealthChecker()
+
+logger.info("RAG application initialized successfully")
 
 
 # Request models for better API documentation and validation
@@ -76,8 +82,52 @@ def read_root(request: Request):
 
 @app.get("/health")
 def health_check():
-    """Health check endpoint for monitoring and deployment"""
-    return {"status": "healthy", "service": "rag-api", "version": "1.0.0"}
+    """Basic health check endpoint for container orchestration"""
+    logger.info("Health check requested")
+    return {
+        "status": "healthy",
+        "service": "rag-api",
+        "version": "1.0.0",
+        "timestamp": time.time(),
+    }
+
+
+@app.get("/health/detailed")
+async def detailed_health_check():
+    """Comprehensive health check for monitoring systems"""
+    start_time = time.time()
+    logger.info("Detailed health check started")
+
+    try:
+        # Check OpenAI service
+        openai_health = health_checker.check_openai_service(openai_service)
+
+        # Check search service
+        search_health = health_checker.check_search_service(search_service)
+
+        # Overall system health
+        overall_healthy = openai_health["healthy"] and search_health["healthy"]
+
+        response_time = int((time.time() - start_time) * 1000)
+
+        result = {
+            "status": "healthy" if overall_healthy else "degraded",
+            "services": [openai_health, search_health],
+            "response_time_ms": response_time,
+            "timestamp": time.time(),
+        }
+
+        logger.info(
+            "Detailed health check completed",
+            overall_healthy=overall_healthy,
+            response_time_ms=response_time,
+        )
+
+        return result
+
+    except Exception as e:
+        logger.error("Health check failed", error=str(e))
+        return {"status": "unhealthy", "error": str(e), "timestamp": time.time()}
 
 
 @app.post("/ask")
@@ -328,3 +378,4 @@ async def chat_health_check():
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
         return {"status": "unhealthy", "error": str(e), "timestamp": time.time()}
+# small change

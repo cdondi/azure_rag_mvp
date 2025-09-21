@@ -1,0 +1,50 @@
+# .dockerignore
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.Python
+**/env
+**/venv
+**/.venv
+**/pip-log.txt
+**/pip-delete-this-directory.txt
+**/.tox
+**/.coverage
+**/.coverage.*
+**/.cache
+**/nosetests.xml
+**/coverage.xml
+**/*.cover
+**/*.log
+**/.git
+**/.mypy_cache
+**/.pytest_cache
+**/.hypothesis
+
+# Development files
+**/README.md
+**/docker-compose.yml
+**/Dockerfile*
+**/.gitignore
+**/.dockerignore
+
+# VS Code
+**/.vscode
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+
+# Test files
+**/test_*
+**/tests/
+
+# Documentation
+**/docs/
+**/*.md
+
+# Data files we don't need in container
+**/python_docs/
+**/python_docs_processed.json
+**/chunks_with_embeddings_test.json

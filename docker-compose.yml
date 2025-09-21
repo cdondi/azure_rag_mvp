@@ -1,12 +1,51 @@
-# docker-compose.yml - Mac optimized
+# Live reload: Changes to Python files instantly update the running app
+# Volume mounts: Edit code locally, see changes immediately
+# Redis: Optional caching layer for future optimization
+# Health checks: Monitor both services
+# Easy development: One command starts everything
+
 version: "3.8"
+
 services:
-  web:
-    build: .
+  rag-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.optimized
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app:cached # cached flag improves performance on Mac
+      # Mount source code for live editing
+      - ./main.py:/app/main.py
+      - ./services.py:/app/services.py
+      - ./logging_config.py:/app/logging_config.py
+      - ./templates:/app/templates
+      - ./static:/app/static
+      - ./.env:/app/.env
     environment:
       - PYTHONPATH=/app
-    platform: linux/amd64 # Ensures compatibility with Azure
+      - UVICORN_RELOAD=true
+    command:
+      ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis_data:
