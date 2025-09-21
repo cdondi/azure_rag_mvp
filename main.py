@@ -311,6 +311,19 @@ async def chat_endpoint(request: ChatRequest):
         )
 
         logger.info(f"Chat request completed in {response_time_ms}ms")
+
+        # For application Insights metrics
+        logger.info(
+            "RAG request metrics",
+            extra={
+                "custom_dimensions": {
+                    "response_time_ms": response_time_ms,
+                    "sources_found": len(search_results),
+                    "question_length": len(request.question),
+                }
+            },
+        )
+
         return response
 
     except HTTPException:
@@ -378,4 +391,3 @@ async def chat_health_check():
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
         return {"status": "unhealthy", "error": str(e), "timestamp": time.time()}
-# small change

@@ -121,3 +121,6 @@ Werkzeug==3.1.1
 yarl==1.20.1
 zipp==3.23.0
 zstandard==0.25.0
+opencensus-ext-azure
+opencensus-ext-requests
+opencensus-ext-logging
