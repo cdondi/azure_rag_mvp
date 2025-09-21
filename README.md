@@ -71,6 +71,45 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 
 **Output:** Generated answers based on retrieved documentation context
 
+### FastAPI Backend
+
+#### `main.py`
+
+**Purpose:** Production-ready FastAPI application providing RESTful API endpoints  
+**Key Endpoints:**
+
+- `GET /` - Root endpoint with welcome message
+- `GET /health` - Health check endpoint for monitoring and deployment
+- `POST /ask` - Main RAG endpoint for question-answering
+- `POST /test-embedding` - Test endpoint for embedding generation
+- `POST /test-search` - Test endpoint for vector search functionality
+- `GET /search-stats` - Endpoint to get search index statistics
+
+**Features:**
+
+- Pydantic models for request validation
+- Comprehensive error handling
+- Structured JSON responses with source attribution
+- Interactive API documentation at `/docs`
+
+#### `services.py`
+
+**Purpose:** Service layer containing business logic for Azure integrations  
+**Key Classes:**
+
+**AzureOpenAIService:**
+
+- `get_embedding()` - Converts text to 1536-dimension vectors
+- `generate_completion()` - GPT text generation with customizable parameters
+- `generate_rag_response()` - Context-aware answer generation using retrieved documents
+
+**AzureSearchService:**
+
+- `vector_search()` - Performs semantic similarity search using embeddings
+- `get_search_stats()` - Retrieves index statistics and health information
+
+**Output:** RESTful API service running on `http://localhost:8000`
+
 ## Configuration Files
 
 ### `.env`
@@ -104,14 +143,30 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 - `openai` - OpenAI API client
 - `python-dotenv` - Environment variable management
 - `beautifulsoup4` - HTML parsing for document processing
+- `fastapi` - Modern web framework for building APIs
+- `uvicorn` - ASGI server for running FastAPI applications
+- `pydantic` - Data validation and settings management
+- `requests` - HTTP library for API calls
 
 ## Data Flow
 
-1. **Collection:** `data_collection.py` → Downloads HTML files
+1. **Collection:** `data_collection.py` → Downloads HTML files from Python.org
 2. **Processing:** `document_processor.py` → Converts to structured text chunks
 3. **Embedding:** `generate_embeddings.py` → Creates vector representations
 4. **Indexing:** `azure_search_indexer.py` → Uploads to searchable index
-5. **Querying:** `test_rag_pipeline.py` → Retrieves and generates answers
+5. **API Service:** `main.py` + `services.py` → Provides RESTful endpoints
+6. **RAG Pipeline:** User question → embedding → search → context retrieval → GPT generation → response
+
+## Complete RAG Workflow
+
+**User asks question via `/ask` endpoint:**
+
+1. **Question Embedding:** Convert user question to 1536-dimension vector using text-embedding-ada-002
+2. **Vector Search:** Find 3 most semantically similar document chunks from Azure AI Search
+3. **Context Preparation:** Format retrieved chunks with source metadata
+4. **Prompt Engineering:** Combine question + context + system instructions
+5. **Answer Generation:** GPT-3.5-Turbo generates contextually-aware response
+6. **Response Delivery:** Return structured JSON with answer, sources, and metadata
 
 ## Azure Resources Used
 
@@ -127,12 +182,67 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 - **Embeddings:** 10 test embeddings generated (1536 dimensions)
 - **Index Storage:** 304.78 KB used (182.05 vector quota units)
 - **Response Time:** ~2-3 seconds for complete RAG query
+- **API Performance:** FastAPI with async support, auto-generated OpenAPI documentation
+- **Rate Limiting:** Handles Azure OpenAI free tier limits (6 requests/minute, 1000 tokens/minute)
+
+## API Usage Examples
+
+### Ask a Question
+
+```bash
+curl -X POST "http://localhost:8000/ask" \
+  -H "Content-Type: application/json" \
+  -d '{"question": "How do you handle errors in Python?", "max_results": 3}'
+```
+
+### Test Embedding Generation
+
+```bash
+curl -X POST "http://localhost:8000/test-embedding" \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Python exception handling"}'
+```
+
+### Check Index Statistics
+
+```bash
+curl "http://localhost:8000/search-stats"
+```
+
+## Development Setup
+
+1. **Environment Setup:**
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Mac/Linux
+   pip install -r requirements.txt
+   ```
+
+2. **Configuration:**
+
+   - Create `.env` file with Azure service credentials
+   - Update VS Code settings in `.vscode/settings.json`
+
+3. **Run Development Server:**
+
+   ```bash
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+4. **Access API Documentation:**
+   - Interactive docs: `http://localhost:8000/docs`
+   - ReDoc: `http://localhost:8000/redoc`
 
 ## Next Steps
 
 This pipeline provides the foundation for:
 
-- FastAPI backend development
-- Streamlit web interface
-- Azure App Service deployment
-- Production scaling and monitoring
+- **Streamlit Web Interface** - User-friendly frontend for non-technical users
+- **Azure App Service Deployment** - Production hosting with CI/CD pipelines
+- **Enhanced Document Collection** - Expand beyond 15 docs to comprehensive Python knowledge base
+- **Production Scaling** - Upgrade to Standard tier for higher rate limits and performance
+- **Monitoring & Analytics** - Application Insights integration for usage tracking
+- **Authentication & Authorization** - User management and API key protection
+- **Caching Layer** - Redis integration for improved response times
+- **Advanced RAG Features** - Query refinement, multi-step reasoning, source ranking
