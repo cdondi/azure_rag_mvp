@@ -35,6 +35,7 @@ COPY logging_config.py .
 COPY templates/ ./templates/
 COPY static/ ./static/
 COPY chunks_with_embeddings.json .
+COPY auth.py .
 
 # Change ownership to non-root user for security
 RUN chown -R appuser:appuser /app
