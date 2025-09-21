@@ -124,12 +124,15 @@ class ChatInterface {
     const content = document.createElement("div");
     content.className = "message-content";
 
-    // Format the content (handle code blocks, etc.)
+    // Format the content
     content.innerHTML = this.formatContent(message.content);
 
-    // Add sources if present
+    // Add sources if present (now with response time)
     if (message.sources && message.sources.length > 0) {
-      const sourcesElement = this.createSourcesElement(message.sources);
+      const sourcesElement = this.createSourcesElement(
+        message.sources,
+        message.responseTime
+      );
       content.appendChild(sourcesElement);
     }
 
@@ -149,18 +152,91 @@ class ChatInterface {
       .replace(/\n/g, "<br>");
   }
 
-  createSourcesElement(sources) {
+  createSourcesElement(sources, responseTime) {
     const sourcesContainer = document.createElement("div");
     sourcesContainer.className = "sources";
 
     const title = document.createElement("h4");
-    title.textContent = `Sources (${sources.length}):`;
+    title.textContent = `Sources (${sources.length})`;
+
+    // Add response time if available
+    if (responseTime) {
+      const timeSpan = document.createElement("span");
+      timeSpan.style.fontSize = "12px";
+      timeSpan.style.color = "#6b7280";
+      timeSpan.style.fontWeight = "normal";
+      timeSpan.textContent = ` • Generated in ${responseTime}ms`;
+      title.appendChild(timeSpan);
+    }
+    title.textContent += ":";
+
     sourcesContainer.appendChild(title);
 
-    sources.forEach((source) => {
+    sources.forEach((source, index) => {
       const sourceItem = document.createElement("div");
       sourceItem.className = "source-item";
-      sourceItem.textContent = `${source.source_file} (chunk ${source.chunk_index})`;
+
+      // Create header with citation number and relevance
+      const sourceHeader = document.createElement("div");
+      sourceHeader.className = "source-header";
+
+      // Left side: citation number and source name
+      const leftSide = document.createElement("div");
+      leftSide.style.display = "flex";
+      leftSide.style.alignItems = "center";
+
+      const citationNum = document.createElement("span");
+      citationNum.className = "citation-number";
+      citationNum.textContent = index + 1;
+
+      const sourceText = document.createElement("span");
+      sourceText.textContent = `${source.source_file} (chunk ${source.chunk_index})`;
+
+      leftSide.appendChild(citationNum);
+      leftSide.appendChild(sourceText);
+
+      // Right side: relevance badge
+      const relevanceBadge = document.createElement("span");
+      const relevance =
+        source.relevance ||
+        (index === 0 ? "high" : index === 1 ? "medium" : "low");
+      relevanceBadge.className = `source-relevance relevance-${relevance}`;
+      relevanceBadge.textContent = relevance;
+
+      sourceHeader.appendChild(leftSide);
+      sourceHeader.appendChild(relevanceBadge);
+
+      // Add preview text
+      const preview = document.createElement("div");
+      preview.className = "source-preview";
+      preview.textContent = source.preview || "No preview available";
+
+      // Add expandable details
+      const details = document.createElement("div");
+      details.className = "source-details";
+      details.innerHTML = `
+            <strong>📄 Chunk:</strong> ${source.chunk_index} | 
+            <strong>📊 Relevance:</strong> ${relevance.toUpperCase()} | 
+            <strong>📍 File:</strong> ${source.source_file}.py<br>
+            <em>Click to collapse details</em>
+        `;
+
+      // Click handler for expansion
+      sourceItem.addEventListener("click", () => {
+        const isExpanded = details.classList.contains("expanded");
+        if (isExpanded) {
+          details.classList.remove("expanded");
+          sourceItem.style.backgroundColor = "white";
+        } else {
+          details.classList.add("expanded");
+          sourceItem.style.backgroundColor = "#f8fafc";
+        }
+      });
+
+      sourceItem.appendChild(sourceHeader);
+      sourceItem.appendChild(preview);
+      sourceItem.appendChild(details);
+
       sourcesContainer.appendChild(sourceItem);
     });
 

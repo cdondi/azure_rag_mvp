@@ -105,24 +105,122 @@ header p {
   border-bottom-left-radius: 4px;
 }
 
-.sources {
-  margin-top: 12px;
-  padding: 12px;
-  background: #f3f4f6;
-  border-radius: 8px;
+sources {
+  margin-top: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 12px;
   border-left: 4px solid #059669;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .sources h4 {
   font-size: 14px;
   color: #374151;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+.sources h4::before {
+  content: "📚";
+  font-size: 16px;
+}
+
+/* Clickable source styles */
 .source-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
   font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.source-item:hover {
+  border-color: #059669;
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1);
+  transform: translateY(-1px);
+}
+
+.source-preview {
   color: #6b7280;
-  margin-bottom: 4px;
+  line-height: 1.4;
+  font-style: italic;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.source-details {
+  display: none;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.source-details.expanded {
+  display: block;
+}
+
+.source-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Citation numbers */
+.citation-number {
+  display: inline-block;
+  background: #059669;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.source-header {
+  display: flex;
+  align-items: center;
+}
+
+/* Relevance badges */
+.source-relevance {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.relevance-high {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.relevance-medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.relevance-low {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.source-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 #input-container {
