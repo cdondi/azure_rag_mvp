@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import os
 from dotenv import load_dotenv
@@ -11,6 +13,10 @@ app = FastAPI(
     description="Retrieval-Augmented Generation API for Python Documentation",
     version="1.0.0",
 )
+
+# Set up Jinja2 templates and static files
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Initialize Azure OpenAI service
 openai_service = AzureOpenAIService()
@@ -28,9 +34,9 @@ class TextRequest(BaseModel):
 
 
 @app.get("/")
-def read_root():
+def read_root(request: Request):
     """Root endpoint - basic welcome message"""
-    return {"message": "Python RAG API is running"}
+    return templates.TemplateResponse("chat.html", {"request": request})
 
 
 @app.get("/health")

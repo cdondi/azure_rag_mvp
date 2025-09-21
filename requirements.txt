@@ -116,3 +116,5 @@ zstandard==0.25.0
 uvicorn
 fastapi
 bs4
+jinja2 
+python-multipart

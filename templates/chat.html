@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python RAG Chat</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Python Documentation Assistant</h1>
+        <p>Ask questions about Python and get AI-powered answers</p>
+      </header>
+
+      <div id="chat-container">
+        <div id="messages"></div>
+      </div>
+
+      <div id="input-container">
+        <form id="chat-form">
+          <input
+            type="text"
+            id="question-input"
+            placeholder="Ask a question about Python..."
+            required
+          />
+          <button type="submit" id="send-button">Send</button>
+        </form>
+      </div>
+
+      <div id="loading" class="hidden">
+        <span>Thinking...</span>
+      </div>
+    </div>
+
+    <script src="/static/js/chat.js"></script>
+  </body>
+</html>
