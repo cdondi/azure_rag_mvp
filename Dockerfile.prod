@@ -32,7 +32,6 @@ WORKDIR /app
 COPY main.py .
 COPY services.py .
 COPY logging_config.py .
-COPY .env .
 COPY templates/ ./templates/
 COPY static/ ./static/
 COPY chunks_with_embeddings.json .

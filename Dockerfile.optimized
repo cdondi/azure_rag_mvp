@@ -33,7 +33,6 @@ WORKDIR /app
 
 # Copy application files in optimal order (least to most frequently changed)
 COPY chunks_with_embeddings.json .
-COPY .env .
 COPY logging_config.py .
 COPY services.py .
 COPY templates/ ./templates/
