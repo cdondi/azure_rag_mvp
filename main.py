@@ -8,6 +8,7 @@ from services import AzureOpenAIService, AzureSearchService
 from logging_config import configure_logging, get_logger, HealthChecker
 import time
 import os
+from collections import defaultdict
 
 from auth import require_api_key
 
@@ -251,10 +252,37 @@ def get_search_stats():
     return stats
 
 
+# Simple in-memory rate limiter
+request_counts = defaultdict(list)
+
+
+def rate_limit_check(client_ip: str, max_requests: int = 10, window_minutes: int = 1):
+    now = time.time()
+    window_start = now - (window_minutes * 60)
+
+    # Clean old requests
+    request_counts[client_ip] = [
+        req_time for req_time in request_counts[client_ip] if req_time > window_start
+    ]
+
+    # Check if over limit
+    if len(request_counts[client_ip]) >= max_requests:
+        return False
+
+    # Add current request
+    request_counts[client_ip].append(now)
+    return True
+
+
 @app.post("/chat", response_model=ChatResponse)
-async def chat_endpoint(request: ChatRequest):
+async def chat_endpoint(request: ChatRequest, req: Request):
     """Enhanced chat endpoint with better error handling and validation"""
-    import time
+
+    # Add rate limiting
+    if not rate_limit_check(req.client.host):
+        raise HTTPException(
+            status_code=429, detail="Rate limit exceeded. Try again in 1 minute."
+        )
 
     start_time = time.time()
 
