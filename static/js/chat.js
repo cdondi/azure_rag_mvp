@@ -37,6 +37,31 @@ class ChatInterface {
     const question = this.questionInput.value.trim();
     if (!question) return;
 
+    // Validate question first
+    try {
+      const validationResponse = await fetch("/chat/validate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ question: question }),
+      });
+
+      const validation = await validationResponse.json();
+      if (!validation.valid) {
+        this.addMessage({
+          type: "assistant",
+          content: `Sorry, there's an issue with your question: ${validation.errors.join(
+            ", "
+          )}`,
+          sources: [],
+        });
+        return;
+      }
+    } catch (error) {
+      console.error("Validation error:", error);
+    }
+
     // Add user message
     this.addMessage({
       type: "user",
@@ -48,8 +73,8 @@ class ChatInterface {
     this.setLoading(true);
 
     try {
-      // Call the API
-      const response = await fetch("/ask", {
+      // Call the enhanced chat API
+      const response = await fetch("/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,23 +86,26 @@ class ChatInterface {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(
+          errorData.detail || `HTTP error! status: ${response.status}`
+        );
       }
 
       const data = await response.json();
 
-      // Add assistant response
+      // Add assistant response with enhanced information
       this.addMessage({
         type: "assistant",
         content: data.answer,
         sources: data.sources,
+        responseTime: data.response_time_ms,
       });
     } catch (error) {
       console.error("Error:", error);
       this.addMessage({
         type: "assistant",
-        content:
-          "Sorry, I encountered an error while processing your question. Please try again.",
+        content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
         sources: [],
       });
     } finally {
