@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, validator, Field
@@ -8,6 +8,7 @@ from services import AzureOpenAIService, AzureSearchService
 from logging_config import configure_logging, get_logger, HealthChecker
 import time
 import os
+from auth import require_api_key
 
 load_dotenv()
 
@@ -391,3 +392,9 @@ async def chat_health_check():
     except Exception as e:
         logger.error(f"Health check failed: {str(e)}")
         return {"status": "unhealthy", "error": str(e), "timestamp": time.time()}
+
+
+@app.get("/api/test")
+def test_auth(api_key: str = Depends(require_api_key)):
+    """Test endpoint that requires API key authentication"""
+    return {"message": "Authentication successful", "api_key_used": api_key[:8] + "..."}
