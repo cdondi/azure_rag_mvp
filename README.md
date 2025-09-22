@@ -6,13 +6,15 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 
 ## Production Deployment Status ✅
 
-**Successfully deployed to Azure App Service with the following production features:**
+**Successfully deployed to multiple Azure platforms with the following production features:**
 
 - ✅ **Containerized deployment** to Azure App Service using optimized Docker images
-- ✅ **GitHub Actions CI/CD** with automated testing and deployment workflows
+- ✅ **Azure Kubernetes Service (AKS) deployment** for container orchestration and learning
+- ✅ **GitHub Actions CI/CD** with automated testing and dual deployment workflows
 - ✅ **Application Insights monitoring** with real-time dashboards and alerting
 - ✅ **API authentication and rate limiting** protecting production endpoints
 - ✅ **Production testing** completed with real Azure resources and performance validation
+- ✅ **Multi-platform deployment strategy** with both App Service and AKS environments
 
 ## Core Components
 
@@ -235,21 +237,46 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 
 **Production URL:** `https://rag-app-production-clvd.azurewebsites.net`
 
+### Azure Kubernetes Service (AKS) Deployment
+
+**Learning Environment Configuration:**
+
+- **AKS Cluster:** Free tier control plane with 1 B2s node for cost optimization
+- **LoadBalancer Service:** External IP access for direct cluster testing
+- **Resource Management:** Deployed in existing resource group `rg-rag-mvp-free-2`
+- **Container Integration:** Uses same optimized Docker images from Azure Container Registry
+- **Environment Variables:** Secure injection via GitHub Actions workflow
+
+**AKS Cluster Details:**
+
+- **Cluster Name:** `aks-rag-learning`
+- **Node Configuration:** 1 x Standard_B2s (cost-effective learning setup)
+- **Kubernetes Version:** 1.32.6
+- **External Access:** LoadBalancer service with public IP
+- **Cost Model:** ~$30/month for learning environment (can be deleted when not needed)
+
 ### GitHub Actions CI/CD Pipeline
 
 **Workflow Features:**
 
 - **Automated Testing:** Unit tests, integration tests, and security scans
 - **Multi-stage Builds:** Separate build, test, and deployment stages
-- **Environment Management:** Automatic deployment to staging and production
+- **Dual Deployment Strategy:** Automatic deployment to both App Service and AKS
+- **Environment Management:** Secure injection of environment variables via GitHub secrets
 - **Rollback Capability:** Automatic rollback on deployment failures
 - **Security Scanning:** Container vulnerability scanning and dependency checks
 
 **Workflow Triggers:**
 
-- Push to `main` branch → Deploy to production
+- Push to `main` branch → Deploy to both App Service and AKS production environments
 - Pull requests → Deploy to staging environment
 - Manual triggers for hotfixes and maintenance deployments
+
+**Deployment Targets:**
+
+- **Primary:** Azure App Service (`rag-app-production-clvd.azurewebsites.net`)
+- **Learning:** AKS cluster with LoadBalancer service
+- **Container Registry:** Single source of truth for both deployment targets
 
 ### Application Insights Monitoring
 
@@ -370,7 +397,8 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 ### Production Resources
 
 - **Azure App Service:** Standard S1 plan hosting the containerized application
-- **Azure Container Registry:** Secure storage for production Docker images
+- **Azure Kubernetes Service:** Free tier control plane with cost-optimized node configuration
+- **Azure Container Registry:** Secure storage for production Docker images (shared across deployments)
 - **Azure OpenAI Service:** GPT-3.5-Turbo for text generation, text-embedding-ada-002 for embeddings
 - **Azure AI Search:** Vector search index with Standard tier for production workloads
 - **Application Insights:** Comprehensive monitoring and analytics platform
@@ -379,8 +407,8 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 
 ### Resource Group
 
-- **Production:** `rg-rag-production` containing all production resources
-- **Development:** `rg-rag-mvp-free-2` for development and testing
+- **Production & Learning:** `rg-rag-mvp-free-2` containing all resources for cost consolidation
+- **Multi-platform Strategy:** Both App Service and AKS deployments in same resource group
 
 ## Performance Metrics
 
@@ -390,6 +418,15 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 - **Text Chunks:** 202 processed chunks (avg 3,057 characters each)
 - **Embeddings:** Full dataset with vector embeddings (1536 dimensions)
 - **Index Storage:** 304.78 KB used (182.05 vector quota units)
+
+### AKS Environment Performance
+
+- **Cluster Configuration:** 1 node (Standard_B2s) with free control plane
+- **External Access:** LoadBalancer service providing public IP access
+- **Response Time:** Comparable to App Service deployment (~2-3 seconds)
+- **Learning Value:** Hands-on Kubernetes experience with production workloads
+- **Cost Optimization:** Minimal resource allocation for learning purposes
+- **Container Orchestration:** Kubernetes 1.32.6 with automated pod management
 
 ### Production Performance
 
@@ -435,6 +472,16 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 ```bash
 # Access the production chat interface
 open https://rag-app-production-clvd.azurewebsites.net
+```
+
+### AKS Learning Environment
+
+```bash
+# Access the AKS-deployed chat interface
+kubectl get services  # Get the external IP
+open http://<EXTERNAL-IP>  # Use the LoadBalancer IP
+
+# Example: open http://132.196.188.98
 ```
 
 ### Authentication
@@ -595,9 +642,10 @@ Azure_RAG_Project/
 ├── .dockerignore                    # Docker build optimization
 ├── .github/
 │   └── workflows/
-│       ├── deploy-production.yml    # Production deployment workflow
-│       ├── deploy-staging.yml       # Staging deployment workflow
-│       └── security-scan.yml        # Security and vulnerability scanning
+│       └── deploy.yml               # Dual deployment workflow (App Service + AKS)
+├── k8s-quick/
+│   ├── deployment.yaml              # Kubernetes deployment configuration
+│   └── service.yaml                 # LoadBalancer service configuration
 ├── templates/
 │   ├── chat.html                    # Main chat interface template
 │   └── login.html                   # Authentication interface
@@ -666,7 +714,7 @@ This RAG system demonstrates a complete production-ready implementation featurin
 
 🔧 **Backend:** FastAPI with Azure OpenAI and AI Search integration  
 🎨 **Frontend:** Modern chat interface with real-time messaging and authentication  
-☁️ **Cloud:** Azure-native with comprehensive monitoring and scaling  
+☁️ **Cloud:** Dual-platform Azure deployment with App Service and Kubernetes  
 📚 **Knowledge Base:** Python documentation with semantic vector search  
 🔍 **Search:** Semantic similarity using 1536-dimension embeddings  
 🤖 **AI:** GPT-3.5-Turbo with context-aware response generation  
@@ -676,8 +724,9 @@ This RAG system demonstrates a complete production-ready implementation featurin
 🛡️ **Reliability:** Comprehensive error handling and graceful degradation  
 🐳 **Containerization:** Multi-stage Docker builds with production optimization  
 📊 **Monitoring:** Application Insights integration with custom dashboards and alerting  
-🚀 **CI/CD:** GitHub Actions with automated testing and deployment  
-📈 **Scalability:** Auto-scaling App Service with load balancing and health checks
+🚀 **CI/CD:** GitHub Actions with automated dual-platform deployment  
+📈 **Scalability:** Auto-scaling App Service and Kubernetes orchestration  
+🎓 **Learning:** Hands-on Kubernetes experience with production-equivalent workloads
 
 ## Container Architecture
 
@@ -706,10 +755,13 @@ The system uses a modern containerized architecture optimized for both developme
 - **Container health checks** for Kubernetes and App Service orchestration
 - **Application Insights integration** with custom dashboards and automated alerting
 
-# Production Deployment Complete ✅
+# Multi-Platform Deployment Complete ✅
 
-This Azure RAG system is now fully deployed to production with enterprise-grade features including containerized deployment, automated CI/CD, comprehensive monitoring, and secure authentication. The system successfully handles production workloads with 99.9% uptime and sub-3-second response times.
+This Azure RAG system is now successfully deployed across multiple platforms with enterprise-grade features:
 
-# Automated AKS deployment via GitHub Actions ✅
+**🏢 Azure App Service:** Production environment with comprehensive monitoring, authentication, and auto-scaling  
+**⚓ Azure Kubernetes Service:** Learning environment demonstrating container orchestration best practices  
+**🔄 Automated CI/CD:** Single workflow deploying to both platforms with secure environment variable injection  
+**📊 Monitoring:** Application Insights integration providing visibility across both deployment targets
 
-<!--  -->
+The dual-platform approach provides both production stability and hands-on Kubernetes learning opportunities while maintaining cost efficiency and operational simplicity.
