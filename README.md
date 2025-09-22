@@ -10,9 +10,9 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 
 - ✅ **Containerized deployment** to Azure App Service using optimized Docker images
 - ✅ **Azure Kubernetes Service (AKS) deployment** for container orchestration and learning
-- ✅ **GitHub Actions CI/CD** with automated testing and dual deployment workflows
+- ✅ **GitHub Actions CI/CD** with dual deployment workflows
 - ✅ **Application Insights monitoring** with real-time dashboards and alerting
-- ✅ **API authentication and rate limiting** protecting production endpoints
+- ✅ **API authentication placeholder and rate limiting** protecting production endpoints
 - ✅ **Production testing** completed with real Azure resources and performance validation
 - ✅ **Multi-platform deployment strategy** with both App Service and AKS environments
 
@@ -255,16 +255,18 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 - **External Access:** LoadBalancer service with public IP
 - **Cost Model:** ~$30/month for learning environment (can be deleted when not needed)
 
+**Production URL:** `http://132.196.188.98/`
+
 ### GitHub Actions CI/CD Pipeline
 
 **Workflow Features:**
 
-- **Automated Testing:** Unit tests, integration tests, and security scans
+- ~~**Automated Testing:** Unit tests, integration tests, and security scans~~
 - **Multi-stage Builds:** Separate build, test, and deployment stages
 - **Dual Deployment Strategy:** Automatic deployment to both App Service and AKS
 - **Environment Management:** Secure injection of environment variables via GitHub secrets
 - **Rollback Capability:** Automatic rollback on deployment failures
-- **Security Scanning:** Container vulnerability scanning and dependency checks
+- ~~**Security Scanning:** Container vulnerability scanning and dependency checks~~
 
 **Workflow Triggers:**
 
@@ -275,7 +277,7 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 **Deployment Targets:**
 
 - **Primary:** Azure App Service (`rag-app-production-clvd.azurewebsites.net`)
-- **Learning:** AKS cluster with LoadBalancer service
+- **Learning:** AKS cluster with LoadBalancer service (`http://132.196.188.98/`)
 - **Container Registry:** Single source of truth for both deployment targets
 
 ### Application Insights Monitoring
@@ -295,21 +297,21 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 - Error rate: < 0.1% of total requests
 - Search relevance: User satisfaction metrics
 
-### API Authentication & Rate Limiting
+### API Authentication Placeholder & Rate Limiting
 
 **Authentication Methods:**
 
-- **Bearer Token Authentication:** Production API endpoints protected with JWT tokens
+- ~~**Bearer Token Authentication:** Production API endpoints protected with JWT tokens~~
 - **IP-based Rate Limiting:** 10 requests per minute per IP address
-- **API Key Management:** Secure key rotation and access control
-- **Role-based Access:** Different access levels for admin, user, and guest roles
+- ~~**API Key Management:** Secure key rotation and access control~~
+- ~~**Role-based Access:** Different access levels for admin, user, and guest roles~~
 
 **Rate Limiting Configuration:**
 
 - **Free Tier Users:** 10 requests per minute
-- **Authenticated Users:** 60 requests per minute
-- **Premium Users:** 300 requests per minute
-- **Burst Protection:** Temporary rate limit increases for valid use cases
+- ~~**Authenticated Users:** 60 requests per minute~~
+- ~~**Premium Users:** 300 requests per minute~~
+- ~~**Burst Protection:** Temporary rate limit increases for valid use cases~~
 
 **Security Features:**
 
@@ -320,7 +322,7 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 
 ## Configuration Files
 
-### `.env`
+### `.env - (Stored only on dev machines for security)`
 
 **Purpose:** Stores Azure service credentials and configuration  
 **Contents:**
@@ -374,7 +376,7 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 6. **Backend Services:** `main.py` + `services.py` → Provides both API and web interface
 7. **Frontend Interface:** HTML templates + CSS/JS → Interactive chat experience
 8. **Monitoring:** Application Insights captures telemetry and performance data
-9. **Complete RAG Workflow:** User question → authentication → rate limiting → embedding → search → context retrieval → GPT generation → formatted response with sources
+9. **Complete RAG Workflow:** User question → ~~authentication~~ → rate limiting → embedding → search → context retrieval → GPT generation → formatted response with sources
 
 ## Complete RAG Workflow
 
@@ -449,7 +451,7 @@ This project implements a Retrieval-Augmented Generation (RAG) system using Azur
 - **Loading Indicators:** Visual feedback during AI processing
 - **Message History:** Persistent conversation view with scroll management
 - **Welcome Message:** Automated greeting explaining system capabilities
-- **Authentication UI:** Login/logout functionality with user session management
+- ~~**Authentication UI:** Login/logout functionality with user session management~~
 
 ### Source Attribution
 
@@ -479,12 +481,14 @@ open https://rag-app-production-clvd.azurewebsites.net
 ```bash
 # Access the AKS-deployed chat interface
 kubectl get services  # Get the external IP
-open http://<EXTERNAL-IP>  # Use the LoadBalancer IP
+open http://132.196.188.98/  # Use the LoadBalancer IP
 
 # Example: open http://132.196.188.98
 ```
 
 ### Authentication
+
+~~
 
 ```bash
 # Get authentication token
@@ -496,23 +500,23 @@ curl -X POST "https://rag-app-production-clvd.azurewebsites.net/auth/login" \
 TOKEN="your-jwt-token"
 ```
 
-### Authenticated API Endpoints
+### [x] Authenticated API Endpoints
 
 ```bash
 # Enhanced chat endpoint with authentication
-curl -X POST "https://rag-app-production-clvd.azurewebsites.net/chat" \
+[x] curl -X POST "https://rag-app-production-clvd.azurewebsites.net/chat" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"question": "How do you handle errors in Python?", "max_results": 3}'
 
 # Validate question before processing
-curl -X POST "https://rag-app-production-clvd.azurewebsites.net/chat/validate" \
+[x] curl -X POST "https://rag-app-production-clvd.azurewebsites.net/chat/validate" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"question": "Show me Python exception handling"}'
 
 # Check authenticated user status
-curl "https://rag-app-production-clvd.azurewebsites.net/auth/me" \
+[x] curl "https://rag-app-production-clvd.azurewebsites.net/auth/me" \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -666,17 +670,17 @@ Azure_RAG_Project/
 
 ### Load Testing
 
-- **Concurrent Users:** Successfully tested with 100+ concurrent users
+- ~~**Concurrent Users:** Successfully tested with 100+ concurrent users~~
 - **Response Time:** Average 2.1 seconds under normal load
-- **Throughput:** 500+ requests per minute during peak usage
+- ~~**Throughput:** 500+ requests per minute during peak usage~~
 - **Error Rate:** < 0.05% under normal conditions
 
 ### Security Testing
 
-- **Authentication:** All endpoints properly protected with JWT validation
+- ~~**Authentication:** All endpoints properly protected with JWT validation~~
 - **Rate Limiting:** Successfully blocks excessive requests (tested up to 1000 requests/minute)
 - **Input Validation:** Comprehensive testing against injection attacks
-- **HTTPS/TLS:** SSL Labs A+ rating for production domain
+- ~~**HTTPS/TLS:** SSL Labs A+ rating for production domain~~
 
 ### Monitoring Validation
 
@@ -690,6 +694,7 @@ Azure_RAG_Project/
 ### Immediate Enhancements (Next 30 Days)
 
 - **Enhanced Document Collection** - Expand beyond 15 docs to comprehensive Python knowledge base
+- **Bearer Token Authentication:** Production API endpoints protected with JWT tokens
 - **User Management Dashboard** - Admin interface for user management and analytics
 - **Advanced Rate Limiting** - Tier-based limits with subscription management
 - **Cache Optimization** - Redis-based caching for improved response times
