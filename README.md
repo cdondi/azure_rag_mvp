@@ -711,3 +711,5 @@ The system uses a modern containerized architecture optimized for both developme
 This Azure RAG system is now fully deployed to production with enterprise-grade features including containerized deployment, automated CI/CD, comprehensive monitoring, and secure authentication. The system successfully handles production workloads with 99.9% uptime and sub-3-second response times.
 
 # Automated AKS deployment via GitHub Actions ✅
+
+<!--  -->
