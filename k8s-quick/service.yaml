@@ -1,0 +1,15 @@
+# Creates a LoadBalancer service (gets external IP from Azure)
+# Routes traffic from port 80 (external) to port 8000 (our container)
+# Finds our pods using the app: rag-app label
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-app-service
+spec:
+  selector:
+    app: rag-app
+  ports:
+  - port: 80
+    targetPort: 8000
+  type: LoadBalancer

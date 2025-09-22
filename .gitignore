@@ -28,3 +28,6 @@ venv/
 
 .vscode/settings.json
 .vscode/launch.json
+
+# k8 deployment
+k8s-quick/deployment.yaml

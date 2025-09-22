@@ -48,3 +48,14 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      # Connects to AKS cluster using existing Azure credentials
+      # Updates the deployment to use the same new image that was just pushed
+      # Waits for the rollout to complete (5 minute timeout)
+      # Only runs on main branch pushes (same as App Service)
+      - name: Deploy to AKS Learning Cluster
+        run: |
+          az aks get-credentials --resource-group rg-rag-mvp-free-2 --name aks-rag-learning
+          kubectl set image deployment/rag-app rag-app=${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          kubectl rollout status deployment/rag-app --timeout=300s
+        if: github.ref == 'refs/heads/main'
